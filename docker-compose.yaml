@@ -1,0 +1,70 @@
+services:
+  app:
+    image: alswl/excalidraw:v0.18.0-fork-b3
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      - VITE_APP_BACKEND_V2_GET_URL=/storage/api/v2/scenes/
+      - VITE_APP_BACKEND_V2_POST_URL=/storage/api/v2/scenes/
+      - VITE_APP_WS_SERVER_URL=
+      - VITE_APP_FIREBASE_CONFIG={}
+      - VITE_APP_HTTP_STORAGE_BACKEND_URL=/storage/api/v2
+      - VITE_APP_STORAGE_BACKEND=http
+      - VITE_APP_DISABLE_TRACKING=true
+      - PUBLIC_URL=${PUBLIC_URL}
+    depends_on:
+      - storage
+      - room
+
+  room:
+    image: excalidraw/excalidraw-room:sha-49bf529
+    platform: linux/amd64
+    restart: unless-stopped
+
+  storage:
+    image: alswl/excalidraw-storage-backend:v2023.11.11
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      - STORAGE_URI=postgres://postgres:postgres@db:5432/excalidraw?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=excalidraw
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - excalidraw_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d excalidraw"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "${LOCAL_PORT:-8088}:80"
+    environment:
+      - EXCALIDRAW_USER=${EXCALIDRAW_USER:-alesr}
+      - EXCALIDRAW_PASSWORD_BASE64=${EXCALIDRAW_PASSWORD_BASE64}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+      - storage
+      - room
+
+volumes:
+  caddy_data:
+  caddy_config:
+  excalidraw_db:

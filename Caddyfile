@@ -1,0 +1,17 @@
+:80 {
+  # live collaboration
+  handle /socket.io/* {
+    reverse_proxy room:80
+  }
+
+  handle /storage/* {
+    reverse_proxy storage:8080
+  }
+
+  handle {
+    basic_auth {
+      {$EXCALIDRAW_USER:admin} {$EXCALIDRAW_PASSWORD_BASE64}
+    }
+    reverse_proxy app:80
+  }
+}
