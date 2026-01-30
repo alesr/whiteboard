@@ -69,46 +69,6 @@ Set up a tunnel named `excalidraw` pointing to `http://localhost:8088`.
 ```sh
 make start
 ```
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `make start` | Start everything (Docker + Tunnel) |
-| `make stop` | Stop everything |
-| `make restart` | Restart everything |
-| `make status` | Show status of all services |
-| `make logs` | Show Docker logs (follow mode) |
-| `make test` | Test local and public connections |
-| `make help` | Show all available commands |
-
-### Docker-only
-
-| Command | Description |
-|---------|-------------|
-| `make up` | Start Docker containers |
-| `make down` | Stop Docker containers |
-| `make clean` | Stop and remove all volumes (data loss!) |
-
-### Tunnel-only
-
-| Command | Description |
-|---------|-------------|
-| `make tunnel-start` | Start Cloudflare Tunnel |
-| `make tunnel-stop` | Stop Cloudflare Tunnel |
-| `make tunnel-manual` | Run tunnel manually (for debugging) |
-| `make logs-tunnel` | Show tunnel logs |
-
-## Services
-
-| Service | Image | Purpose |
-|---------|-------|---------|
-| `app` | `alswl/excalidraw` | Excalidraw web UI |
-| `room` | `excalidraw/excalidraw-room` | WebSocket server for real-time collaboration |
-| `storage` | `alswl/excalidraw-storage-backend` | REST API for persisting scenes |
-| `db` | `postgres:16` | PostgreSQL database |
-| `caddy` | `caddy:2` | Reverse proxy with basic auth |
-
 ## Configuration
 
 ### Environment Variables
