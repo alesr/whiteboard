@@ -47,6 +47,11 @@ services:
       timeout: 5s
       retries: 5
 
+  mermaid:
+    image: ghcr.io/mermaid-js/mermaid-live-editor:latest
+    platform: linux/amd64
+    restart: unless-stopped
+
   caddy:
     image: caddy:2
     restart: unless-stopped
@@ -55,6 +60,8 @@ services:
     environment:
       - EXCALIDRAW_USER=${EXCALIDRAW_USER:-alesr}
       - EXCALIDRAW_PASSWORD_BASE64=${EXCALIDRAW_PASSWORD_BASE64}
+      - EXCALIDRAW_DOMAIN=${EXCALIDRAW_DOMAIN:-draw.localhost}
+      - MERMAID_DOMAIN=${MERMAID_DOMAIN:-mermaid.localhost}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -63,6 +70,7 @@ services:
       - app
       - storage
       - room
+      - mermaid
 
 volumes:
   caddy_data:
